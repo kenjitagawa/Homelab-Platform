@@ -2,6 +2,8 @@
 
 A homelab Kubernetes platform project focused on organizing deployments, infrastructure configuration, and observability in a clean repository.
 
+This repository includes documentation primarily intended as a personal reference for future use. It has been refined with the help of AI to improve clarity and structure, and should be sufficiently detailed for others who wish to follow along and build a similar homelab platform. Where relevant, the documentation also provides deeper explanations of specific configurations, such as Traefik and MetalLB, to reinforce understanding of how these components operate.
+
 ## Goals
 
 - create a clean structure for Kubernetes-related resources
