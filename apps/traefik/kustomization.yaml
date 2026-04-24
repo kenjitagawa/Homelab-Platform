@@ -5,7 +5,8 @@ resources:
   - namespace.yaml
   - dashboard-ingressroute.yaml
 
-commonLabels:
-  app.kubernetes.io/name: traefik
-  app.kubernetes.io/managed-by: homelab-platform
-  app.kubernetes.io/part-of: homelab-platform
+labels:
+  - pairs:
+      app.kubernetes.io/name: traefik
+      app.kubernetes.io/managed-by: homelab-platform
+      app.kubernetes.io/part-of: homelab-platform
