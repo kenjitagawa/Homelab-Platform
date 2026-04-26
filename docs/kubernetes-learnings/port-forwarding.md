@@ -37,7 +37,7 @@ If this does not work:
 https://prometheus.tagawa.ca
 ```
 
-but port-forwarding does work, Prometheus is probably healthy and the issue is likely in the external routing path:
+but port-forwarding does work, Prometheus is responding and the issue is likely in the external routing path:
 
 - DNS
 - Traefik
@@ -45,7 +45,7 @@ but port-forwarding does work, Prometheus is probably healthy and the issue is l
 - certificate or TLS handling
 - service routing
 
-If port-forwarding does not work, the issue is probably closer to the application itself:
+If port-forwarding does not work, the issue is likely closer to the application itself:
 
 - pod is not running
 - service is missing
