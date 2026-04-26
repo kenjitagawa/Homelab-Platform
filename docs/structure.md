@@ -97,8 +97,8 @@ Contains all documentation related to the repository.
 
 ```text
 helm-values.yaml
-deployment-k8s-nextjs-app.yaml
-ingress-grafana.yaml
+deployment.yaml
+ingress.yaml
 ```
 
 
@@ -140,21 +140,21 @@ sample-app
 
 ## Manifest Naming Conventions
 
-All Kubernetes manifests follow a predictable naming pattern.
+Application manifests use simple resource-type filenames inside each app directory.
 
 ### Pattern
 
 ```text
-<resource-type>-<resource-name>.yaml
+<resource-type>.yaml
 ```
 
 ### Examples
 
 ```text
-namespace-monitoring.yaml
-service-sample-app.yaml
-ingress-grafana.yaml
-deployment-sample-app.yaml
+namespace.yaml
+deployment.yaml
+service.yaml
+ingress.yaml
 ```
 
 
@@ -191,9 +191,11 @@ Example:
 
 ```text
 apps/my-app/
-  deployment-my-app.yaml
-  service-my-app.yaml
-  ingress-my-app.yaml
+  namespace.yaml
+  deployment.yaml
+  service.yaml
+  ingress.yaml
+  kustomization.yaml
 ```
 
 
