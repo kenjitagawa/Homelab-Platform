@@ -4,7 +4,7 @@
 
 MetalLB needs a dedicated LAN address pool for Kubernetes `LoadBalancer` services.
 
-The pool must be:
+The pool is reserved for this cluster and is kept:
 
 - on the same LAN as the cluster nodes
 - outside the DHCP range
@@ -59,10 +59,10 @@ Verify the pool and advertisement exist:
 kubectl get ipaddresspools,l2advertisements -n metallb-system
 ```
 
-Verify a `LoadBalancer` service receives an address from the pool:
+Verify `LoadBalancer` services receive addresses from the pool:
 
 ```bash
 kubectl get svc -A
 ```
 
-The Traefik service should receive an external IP from `10.0.200.10-10.0.200.100`.
+The Traefik service receives an external IP from `10.0.200.10-10.0.200.100`.

@@ -42,7 +42,7 @@ The expected key is:
 api-token
 ```
 
-The real token must not be committed to Git.
+The real token is kept out of Git.
 
 Create the secret manually:
 
