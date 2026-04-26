@@ -1,0 +1,60 @@
+commonLabels:
+  app.kubernetes.io/part-of: homelab-platform
+
+grafana:
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - grafana.tagawa.ca
+    path: /
+    pathType: Prefix
+    tls:
+      - hosts:
+          - grafana.tagawa.ca
+
+  persistence:
+    enabled: true
+    type: pvc
+    storageClassName: local-path
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi
+
+prometheus:
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - prometheus.tagawa.ca
+    paths:
+      - /
+    pathType: Prefix
+    tls:
+      - hosts:
+          - prometheus.tagawa.ca
+
+  prometheusSpec:
+    retention: 10d
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: local-path
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 20Gi
+
+alertmanager:
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - alertmanager.tagawa.ca
+    paths:
+      - /
+    pathType: Prefix
+    tls:
+      - hosts:
+          - alertmanager.tagawa.ca
