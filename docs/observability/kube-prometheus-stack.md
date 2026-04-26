@@ -125,3 +125,7 @@ If ingress is not available yet, use port-forwarding:
 ```bash
 kubectl port-forward -n monitoring svc/kube-prometheus-stack-alertmanager 9093:9093
 ```
+
+## Custom Alerts
+
+Custom homelab alert rules are documented in [Alerting](alerting.md).
