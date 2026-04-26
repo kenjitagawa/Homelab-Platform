@@ -1,0 +1,36 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: homelab-slack-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: homelab-slack-alerts
+    app.kubernetes.io/part-of: homelab-platform
+spec:
+  route:
+    receiver: slack-homelab
+    groupBy:
+      - alertname
+      - severity
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 4h
+    matchers:
+      - name: route
+        matchType: =
+        value: homelab
+      - name: severity
+        matchType: =~
+        value: warning|critical
+  receivers:
+    - name: slack-homelab
+      slackConfigs:
+        - apiURL:
+            name: alertmanager-slack-webhook
+            key: webhook-url
+          channel: "#homelab-alerts"
+          sendResolved: true
+          title: '{{ .Status | toUpper }}: {{ .CommonLabels.alertname }}'
+          text: >-
+            {{ range .Alerts }}{{ .Annotations.summary }}{{ if .Annotations.description }}
+            {{ .Annotations.description }}{{ end }}{{ end }}

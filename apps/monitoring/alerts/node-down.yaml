@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: homelab-node-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: homelab-node-alerts
+    app.kubernetes.io/part-of: homelab-platform
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: homelab.node.rules
+      rules:
+        - alert: HomelabNodeDown
+          expr: up{job="node-exporter"} == 0
+          for: 2m
+          labels:
+            namespace: monitoring
+            route: homelab
+            severity: warning
+          annotations:
+            summary: "Node exporter target is down"
+            description: "Node exporter target {{ $labels.instance }} has been down for more than 2 minutes."

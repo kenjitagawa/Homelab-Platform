@@ -47,6 +47,57 @@ prometheus:
               storage: 20Gi
 
 alertmanager:
+  config:
+    global:
+      resolve_timeout: 5m
+    inhibit_rules: ## default values from kube-prometheus-stack helm chart
+      - source_matchers:
+          - 'severity = critical'
+        target_matchers:
+          - 'severity =~ warning|info'
+        equal:
+          - 'namespace'
+          - 'alertname'
+      - source_matchers:
+          - 'severity = warning'
+        target_matchers:
+          - 'severity = info'
+        equal:
+          - 'namespace'
+          - 'alertname'
+      - source_matchers:
+          - 'alertname = InfoInhibitor'
+        target_matchers:
+          - 'severity = info'
+        equal:
+          - 'namespace'
+      - target_matchers:
+          - 'alertname = InfoInhibitor'
+    route:
+      group_by:
+        - namespace
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 12h
+      receiver: slack-kube-alerts
+      routes:
+        - receiver: "null"  ## This alert is always firing, so we send it to null receiver
+          matchers:
+            - alertname = "Watchdog"
+    receivers:
+      - name: "null" ## This receiver is used to silence the Watchdog alert
+      - name: slack-kube-alerts
+        slack_configs:
+          - api_url_file: /etc/alertmanager/secrets/kube-alertmanager-slack-webhook/webhook-url
+            channel: "#kube-alerts"
+            send_resolved: true
+            title: '{{ .Status | toUpper }}: {{ .CommonLabels.alertname }}'
+            text: >-
+              {{ range .Alerts }}{{ .Annotations.summary }}{{ if .Annotations.description }}
+              {{ .Annotations.description }}{{ end }}{{ end }}
+    templates:
+      - /etc/alertmanager/config/*.tmpl
+
   ingress:
     enabled: true
     ingressClassName: traefik
@@ -58,3 +109,7 @@ alertmanager:
     tls:
       - hosts:
           - alertmanager.tagawa.ca
+
+  alertmanagerSpec:
+    secrets:
+      - kube-alertmanager-slack-webhook
