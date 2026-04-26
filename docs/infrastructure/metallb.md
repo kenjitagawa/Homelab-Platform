@@ -8,6 +8,11 @@ In cloud environments, services of type `LoadBalancer` usually receive an extern
 
 MetalLB only handles external IP assignment and LAN advertisement. It does not replace ingress routing, TLS termination, or application-level load balancing.
 
+Related infrastructure docs:
+
+- [Load Balancer Address Pool](load-balancer-address-pool.md)
+- [Ingress Baseline](ingress-baseline.md)
+
 ## Prerequisites
 
 ### Disable k3s ServiceLB

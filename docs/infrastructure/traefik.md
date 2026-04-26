@@ -14,6 +14,13 @@ Its responsibilities are:
 
 In this setup, Traefik is exposed through a Kubernetes `LoadBalancer` service. MetalLB assigns the Traefik service a LAN IP.
 
+Related infrastructure docs:
+
+- [Ingress Baseline](ingress-baseline.md)
+- [DNS for Homelab Ingress](dns-for-ingress.md)
+- [TLS Certificate Strategy](tls-certificate-strategy.md)
+- [Traefik Dashboard](traefik-dashboard.md)
+
 ## Architecture
 
 ```text
