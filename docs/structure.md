@@ -84,6 +84,8 @@ Examples:
 
 Contains all documentation related to the repository.
 
+Namespace usage is documented in [Namespace Strategy](namespaces.md).
+
 
 ## Naming Conventions
 
@@ -127,6 +129,7 @@ Namespaces are kept **simple and readable**, optimized for homelab usage.
 * Each application or major service should have its own namespace
 * Use lowercase kebab-case
 * Keep names short and meaningful
+* Match the namespace to the app or platform service boundary
 
 ### Examples
 
