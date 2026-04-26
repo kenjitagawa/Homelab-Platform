@@ -4,7 +4,7 @@
 
 `kube-prometheus-stack` installs Prometheus, Grafana, Alertmanager, node-exporter, kube-state-metrics, default dashboards, and default alerting rules.
 
-This repository stores the namespace manifest and Helm values under:
+This repository stores the monitoring namespace manifest and Helm values under:
 
 ```text
 apps/monitoring/
@@ -60,7 +60,7 @@ helm status kube-prometheus-stack -n monitoring
 
 ## Ingress Access
 
-This setup exposes Grafana, Prometheus, and Alertmanager through Traefik for homelab debugging convenience.
+The homelab exposes Grafana, Prometheus, and Alertmanager through Traefik for debugging and day-to-day visibility.
 
 ```text
 https://grafana.tagawa.ca
@@ -68,9 +68,9 @@ https://prometheus.tagawa.ca
 https://alertmanager.tagawa.ca
 ```
 
-Internal DNS should point each hostname to the Traefik LoadBalancer IP.
+Internal DNS points each hostname to the Traefik LoadBalancer IP.
 
-Prometheus and Alertmanager do not provide strong built-in authentication in this configuration. This is acceptable for a private homelab, but this access pattern should not be used for a production environment without adding proper authentication, authorization, and network controls.
+**Note**: Prometheus and Alertmanager do not provide strong built-in authentication in this configuration. This is acceptable for a private homelab, but production environments need proper authentication, authorization, and network controls.
 
 ## Verify Prometheus Targets
 
@@ -94,7 +94,7 @@ Confirm baseline targets are up, including:
 - kubelet
 - Grafana
 
-Any down targets should be reviewed before relying on the stack for cluster monitoring.
+Review any down targets before relying on the stack for cluster monitoring.
 
 ## Grafana Access
 

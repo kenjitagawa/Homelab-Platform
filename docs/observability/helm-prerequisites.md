@@ -4,7 +4,7 @@
 
 Helm is required for installing observability tooling such as Prometheus and Grafana through the `kube-prometheus-stack` chart.
 
-This setup uses the `prometheus-community` Helm repository.
+The observability stack uses the `prometheus-community` Helm repository.
 
 ## Install Helm
 

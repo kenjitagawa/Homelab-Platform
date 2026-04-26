@@ -41,8 +41,8 @@ The repository follows a structure designed to support future GitOps adoption.
 ├── apps
 │   ├── traefik/
 │   ├── metallb/
-│   ├── kube-prometheus-stack/
-│   └── sample-app/
+│   ├── monitoring/
+│   └── it-tools/
 ├── docs
 │   └── structure.md
 ├── infra/
@@ -55,7 +55,7 @@ The repository follows a structure designed to support future GitOps adoption.
 
 Contains application and platform service definitions.
 
-Each application or service has its own directory, which may include:
+Each application or service has its own directory. These directories contain:
 
 * Kubernetes manifests
 * Helm values (`helm-values.yaml`)
@@ -65,19 +65,19 @@ Examples:
 
 * `traefik/` - ingress controller
 * `metallb/` - load balancer
-* `kube-prometheus-stack/` - monitoring stack
-* `sample-app/` - test workload
+* `monitoring/` - kube-prometheus-stack configuration
+* `it-tools/` - self-hosted utilities app
 
 
 #### `infra/`
 
 Reserved for cluster-level infrastructure components that do not belong to a single app.
 
-Examples may include:
+Examples:
 
 * shared resources
 * cluster-wide configurations
-* future GitOps bootstrap resources (e.g., ArgoCD root apps)
+* future GitOps bootstrap resources, such as ArgoCD root apps
 
 
 #### `docs/`
@@ -172,7 +172,7 @@ helm-values.yaml
 ### Example
 
 ```text
-apps/kube-prometheus-stack/helm-values.yaml
+apps/monitoring/helm-values.yaml
 ```
 
 This ensures consistency across all Helm-managed services.
@@ -185,7 +185,7 @@ To add a new application:
 1. Create a new directory under `apps/`
 2. Add Kubernetes manifests and/or Helm values
 3. Follow naming conventions for all files and resources
-4. Assign a dedicated namespace if applicable
+4. Assign a dedicated namespace for the app or service
 
 Example:
 
@@ -203,7 +203,7 @@ apps/my-app/
 
 This repository is structured to support future integration with tools like:
 
-* ArgoCD - Still deciding, but probably going with ArgoCD
+* ArgoCD
 * Flux
 
 The `apps/` structure allows easy transition to:

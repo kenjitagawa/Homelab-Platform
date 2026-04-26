@@ -2,7 +2,7 @@
 
 A homelab Kubernetes platform project focused on organizing deployments, infrastructure configuration, and observability in a clean repository.
 
-This repository includes documentation primarily intended as a personal reference for future use. It has been refined with the help of AI to improve clarity and structure, and should be sufficiently detailed for others who wish to follow along and build a similar homelab platform. Where relevant, the documentation also provides deeper explanations of specific configurations, such as Traefik and MetalLB, to reinforce understanding of how these components operate.
+This repository is my reference for running the Kubernetes platform layer of my homelab. The docs explain the current setup and the decisions behind it, especially around MetalLB, Traefik, ingress, TLS, and observability.
 
 ## Goals
 
@@ -10,7 +10,7 @@ This repository includes documentation primarily intended as a personal referenc
 - deploy and manage workloads in the homelab
 - add observability with Prometheus and Grafana
 - document architecture and operational decisions
-- prepare for future GitOps adoption with ArgoCD
+- prepare for GitOps adoption with ArgoCD
 
 ## Planned Phases
 
@@ -24,9 +24,4 @@ This repository includes documentation primarily intended as a personal referenc
 
 - `apps/` — application manifests and related configuration
 - `infra/` — infrastructure-level Kubernetes resources and shared config
-- `monitoring/` — observability stack configuration
 - `docs/` — architecture, setup notes, and project documentation
-
-## Status
-
-This repository is currently in the foundation phase.
