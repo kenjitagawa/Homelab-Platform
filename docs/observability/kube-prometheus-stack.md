@@ -112,6 +112,39 @@ The default username is:
 admin
 ```
 
+## Kubernetes Dashboards
+
+`kube-prometheus-stack` installs a set of default Kubernetes dashboards into Grafana.
+
+These dashboards are stored as ConfigMaps labeled:
+
+```text
+grafana_dashboard: "1"
+```
+
+Grafana's dashboard sidecar watches for those ConfigMaps and loads them automatically.
+
+Useful included dashboards cover:
+
+- cluster health
+- nodes
+- pods
+- workloads
+- namespaces
+- persistent volumes
+- kubelet
+- API server
+
+Verify the dashboard ConfigMaps:
+
+```bash
+kubectl get configmaps -n monitoring -l grafana_dashboard=1
+```
+
+The dashboards are managed by the Helm chart through `apps/monitoring/helm-values.yaml`. Custom dashboards can be added later as additional labeled ConfigMaps when the built-in dashboards are not enough.
+
+![grafana-default-dashboards](../../images/grafana-default-dashboards.png)
+
 ## Alertmanager Access
 
 Open Alertmanager:
