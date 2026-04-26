@@ -26,7 +26,7 @@ alertmanager.tagawa.ca
 
 ## DNS Records
 
-After Traefik receives its external IP, create DNS records pointing each hostname to that IP.
+After Traefik receives its external IP, DNS records point each hostname to that IP.
 
 Example:
 
@@ -38,7 +38,7 @@ prometheus.tagawa.ca    -> 10.0.200.11
 alertmanager.tagawa.ca  -> 10.0.200.11
 ```
 
-A wildcard record can also be used if the internal DNS server supports it:
+A wildcard record can be used for the homelab zone:
 
 ```text
 *.tagawa.ca -> 10.0.200.11

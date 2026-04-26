@@ -2,24 +2,25 @@
 
 ## Purpose
 
-The ingress baseline restores north-south traffic into the rebuilt k3s cluster.
+The ingress baseline is the shared traffic path that lets devices on the LAN reach applications running inside the k3s cluster.
 
-It is built from:
+Once this baseline is working, exposing a new app usually means adding:
 
-- MetalLB for `LoadBalancer` IP assignment
-- Traefik for HTTP and HTTPS ingress routing
-- internal DNS records for homelab hostnames
-- Let's Encrypt certificates through Traefik and Cloudflare DNS challenge
+- a Kubernetes `Service`
+- an `Ingress` or `IngressRoute`
+- a DNS record that points the hostname to Traefik
 
-## Traffic Flow
+The baseline is not tied to one app. IT-Tools, Grafana, Prometheus, Alertmanager, the Traefik dashboard, and future services all use the same path.
+
+## How Traffic Flows
 
 ```text
-LAN client
-  -> service hostname
-  -> Traefik LoadBalancer IP from MetalLB
+Client on LAN
+  -> DNS hostname
+  -> Traefik LoadBalancer IP
   -> Traefik
   -> Kubernetes Service
-  -> application Pod
+  -> Pod
 ```
 
 Example:
@@ -31,6 +32,16 @@ it-tools.tagawa.ca
   -> it-tools service
   -> it-tools pod
 ```
+
+## What Each Piece Does
+
+MetalLB gives Traefik a stable LAN IP. This cluster runs on bare-metal k3s, so there is no cloud load balancer. MetalLB fills that role by assigning addresses from the reserved homelab pool.
+
+Traefik receives HTTP and HTTPS traffic on that LAN IP. It looks at the requested hostname and routes the request to the matching Kubernetes Service.
+
+DNS points service hostnames like `it-tools.tagawa.ca` and `grafana.tagawa.ca` to the Traefik IP.
+
+TLS is handled by Traefik with Let's Encrypt certificates issued through the Cloudflare DNS challenge.
 
 ## Repository Resources
 
@@ -62,13 +73,13 @@ Verify MetalLB resources:
 kubectl get ipaddresspools,l2advertisements -n metallb-system
 ```
 
-Verify Traefik receives an external IP:
+Verify Traefik has a LAN IP:
 
 ```bash
 kubectl get svc -n traefik-system
 ```
 
-Verify routed HTTPS access with an exposed application:
+Verify HTTPS access through the full ingress path:
 
 ```bash
 curl -I https://it-tools.tagawa.ca

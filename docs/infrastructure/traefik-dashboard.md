@@ -45,7 +45,7 @@ api:
 
 This avoids exposing the dashboard through Traefik's insecure API port.
 
-For a production environment, the dashboard should also be protected with authentication middleware or a stronger access control layer. In this homelab, access is intended to stay limited to the private network.
+The dashboard is intended for private homelab access. A production environment would also add authentication middleware or a stronger access control layer.
 
 ## Validation
 

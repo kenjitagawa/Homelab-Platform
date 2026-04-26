@@ -1,32 +1,25 @@
-# MetalLB Setup Guide
+# MetalLB
 
-## Overview
+## Purpose
 
-MetalLB provides `LoadBalancer` service support for bare-metal Kubernetes clusters.
+MetalLB gives this bare-metal k3s cluster `LoadBalancer` support.
 
-In cloud environments, services of type `LoadBalancer` usually receive an external IP from the provider. In this homelab k3s cluster, MetalLB fills that role by assigning IPs from a reserved LAN range and advertising those IPs on the local network.
+In a cloud Kubernetes cluster, a cloud provider usually assigns external IPs to `LoadBalancer` services. This homelab does not have that provider layer, so MetalLB assigns IPs from a reserved LAN range and advertises them on the local network.
 
-MetalLB only handles external IP assignment and LAN advertisement. It does not replace ingress routing, TLS termination, or application-level load balancing.
+MetalLB only handles LAN IP assignment and advertisement. Traefik still handles HTTP routing, HTTPS, certificates, and application ingress.
 
 Related infrastructure docs:
 
 - [Load Balancer Address Pool](load-balancer-address-pool.md)
 - [Ingress Baseline](ingress-baseline.md)
 
-## Prerequisites
+## Cluster Assumptions
 
-### Disable k3s ServiceLB
+k3s ServiceLB is disabled because MetalLB owns `LoadBalancer` behavior in this cluster.
 
-MetalLB replaces the default k3s ServiceLB implementation.
+The bundled k3s Traefik deployment is also disabled because Traefik is managed through this repository with Helm values in `apps/traefik/values.yaml`.
 
-On each server node, update `/etc/rancher/k3s/config.yaml`:
-
-```yaml
-disable:
-  - servicelb
-```
-
-If Traefik will also be managed through this repository, disable the bundled Traefik deployment at the same time:
+The k3s server config uses:
 
 ```yaml
 disable:
@@ -34,52 +27,27 @@ disable:
   - traefik
 ```
 
-Restart k3s after changing the node configuration:
+After changing `/etc/rancher/k3s/config.yaml`, restart k3s:
 
 ```bash
 sudo systemctl restart k3s
 ```
 
-### Reserve a LAN IP Range
+## Address Pool
 
-The MetalLB pool must be in the same subnet as the cluster nodes, outside the DHCP range, and not already assigned to another device.
-
-This repository currently uses:
+The MetalLB pool is:
 
 ```text
 10.0.200.10-10.0.200.100
 ```
 
-## Installation
+This range is reserved for Kubernetes load balancer services and must stay outside DHCP and static host assignments.
 
-Install the upstream MetalLB components before applying the resources in this repository:
-
-```bash
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/main/config/manifests/metallb-native.yaml
-```
-
-Verify the controller and speaker pods are running:
-
-```bash
-kubectl get pods -n metallb-system
-```
-
-## Repository Layout
+The pool is defined in:
 
 ```text
-apps/
-  metallb/
-    namespace.yaml
-    ip-address-pool.yaml
-    l2-advertisement.yaml
-    kustomization.yaml
+apps/metallb/ip-address-pool.yaml
 ```
-
-## Configuration
-
-`apps/metallb/namespace.yaml` creates the `metallb-system` namespace used by the MetalLB resources.
-
-`apps/metallb/ip-address-pool.yaml` defines the LAN address pool MetalLB can assign to `LoadBalancer` services:
 
 ```yaml
 apiVersion: metallb.io/v1beta1
@@ -92,7 +60,15 @@ spec:
     - 10.0.200.10-10.0.200.100
 ```
 
-`apps/metallb/l2-advertisement.yaml` enables Layer 2 advertisement for that pool:
+## L2 Advertisement
+
+Layer 2 advertisement tells MetalLB to announce addresses from the pool on the LAN.
+
+It is defined in:
+
+```text
+apps/metallb/l2-advertisement.yaml
+```
 
 ```yaml
 apiVersion: metallb.io/v1beta1
@@ -105,13 +81,23 @@ spec:
     - homelab-lan-pool
 ```
 
-`apps/metallb/kustomization.yaml` groups the resources so they can be applied together:
+## Repository Layout
 
-```bash
-kubectl apply -k apps/metallb
+```text
+apps/metallb/
+  namespace.yaml
+  ip-address-pool.yaml
+  l2-advertisement.yaml
+  kustomization.yaml
 ```
 
 ## Apply
+
+Install the upstream MetalLB components first:
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/main/config/manifests/metallb-native.yaml
+```
 
 Apply the repository-managed MetalLB configuration:
 
@@ -119,26 +105,40 @@ Apply the repository-managed MetalLB configuration:
 kubectl apply -k apps/metallb
 ```
 
+## Validation
+
+Verify the MetalLB pods:
+
+```bash
+kubectl get pods -n metallb-system
+```
+
 Verify the custom resources:
 
 ```bash
-kubectl get ipaddresspools -n metallb-system
-kubectl get l2advertisements -n metallb-system
+kubectl get ipaddresspools,l2advertisements -n metallb-system
+```
+
+Verify Traefik received an address from the pool:
+
+```bash
+kubectl get svc -n traefik-system
+```
+
+Expected:
+
+```text
+NAME      TYPE           EXTERNAL-IP
+traefik   LoadBalancer   10.0.200.x
 ```
 
 ## Smoke Test
 
-Create a temporary namespace and deploy nginx:
+Create a temporary test service:
 
 ```bash
 kubectl create namespace lb-test
 kubectl create deployment nginx --image=nginx -n lb-test
-kubectl scale deployment nginx --replicas=2 -n lb-test
-```
-
-Expose the deployment as a `LoadBalancer` service:
-
-```bash
 kubectl expose deployment nginx \
   --name nginx \
   --port 80 \
@@ -153,20 +153,13 @@ Confirm MetalLB assigns an address from the configured pool:
 kubectl get svc -n lb-test
 ```
 
-Example output:
-
-```text
-NAME    TYPE           CLUSTER-IP     EXTERNAL-IP    PORT(S)
-nginx   LoadBalancer   10.x.x.x       10.0.200.10   80:xxxxx/TCP
-```
-
-Test from another machine on the LAN:
+Test from a LAN client:
 
 ```bash
-curl http://10.0.200.10
+curl http://<ASSIGNED_LOADBALANCER_IP>
 ```
 
-Clean up the smoke test when finished:
+Clean up:
 
 ```bash
 kubectl delete namespace lb-test
@@ -174,13 +167,11 @@ kubectl delete namespace lb-test
 
 ## Troubleshooting
 
-If no external IP is assigned, check that MetalLB is running and that the service is actually `type: LoadBalancer`:
+If a service does not receive an external IP, check the MetalLB pods and custom resources:
 
 ```bash
 kubectl get pods -n metallb-system
-kubectl get svc -n lb-test
+kubectl get ipaddresspools,l2advertisements -n metallb-system
 ```
 
-If the assigned IP is not reachable from the LAN, check for DHCP overlap, an address already in use, the wrong subnet, or network equipment blocking ARP traffic.
-
-If the service stays pending, confirm the MetalLB CRDs are installed and k3s ServiceLB is disabled.
+If the IP is assigned but unreachable from the LAN, check for DHCP overlap, static IP conflicts, subnet mismatch, or network equipment blocking ARP traffic.
