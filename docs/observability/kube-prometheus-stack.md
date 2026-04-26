@@ -68,6 +68,12 @@ https://prometheus.tagawa.ca
 https://alertmanager.tagawa.ca
 ```
 
+![Grafana landing page](../../images/grafana-landing-page.png)
+
+![Prometheus landing page](../../images/prometheus-landing-page.png)
+
+![Alertmanager landing page](../../images/alertmanager-landing-page.png)
+
 Internal DNS points each hostname to the Traefik LoadBalancer IP.
 
 **Note**: Prometheus and Alertmanager do not provide strong built-in authentication in this configuration. This is acceptable for a private homelab, but production environments need proper authentication, authorization, and network controls.

@@ -33,6 +33,8 @@ it-tools.tagawa.ca
   -> it-tools pod
 ```
 
+![Ingress baseline](../../images/ingress-baseline.png)
+
 ## What Each Piece Does
 
 MetalLB gives Traefik a stable LAN IP. This cluster runs on bare-metal k3s, so there is no cloud load balancer. MetalLB fills that role by assigning addresses from the reserved homelab pool.
