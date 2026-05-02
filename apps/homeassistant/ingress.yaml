@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: homeassistant
+  namespace: homeassistant
+  labels:
+    app.kubernetes.io/name: homeassistant
+    app.kubernetes.io/part-of: homelab-platform
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: homeassistant.tagawa.ca
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: home-assistant-external
+                port:
+                  number: 8123
+
+  tls:
+    - hosts:
+        - homeassistant.tagawa.ca

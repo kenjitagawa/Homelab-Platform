@@ -42,6 +42,7 @@ api:
 
 additionalArguments:
   - "--serversTransport.insecureSkipVerify=true"
+  - "--providers.kubernetesingress.allowexternalnameservices=true"
 
 persistence:
   enabled: true
