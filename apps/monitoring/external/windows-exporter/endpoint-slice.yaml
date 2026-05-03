@@ -1,0 +1,16 @@
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: windows-exporter
+  namespace: monitoring
+  labels:
+    kubernetes.io/service-name: windows-exporter
+    app.kubernetes.io/name: windows-exporter
+addressType: IPv4
+ports:
+  - name: metrics
+    port: 9182
+    protocol: TCP
+endpoints:
+  - addresses:
+      - 10.0.100.110

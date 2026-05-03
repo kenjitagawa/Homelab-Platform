@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: windows-exporter
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: windows-exporter
+spec:
+  ports:
+    - name: metrics
+      port: 9182
+      targetPort: 9182
